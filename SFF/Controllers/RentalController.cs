@@ -63,7 +63,7 @@ namespace SFF.Controllers
             }
             else
             {
-                return BadRequest());
+                return BadRequest();
             }
         }
 

@@ -9,7 +9,7 @@ using SFF.Models;
 namespace SFF.Migrations
 {
     [DbContext(typeof(SFFContext))]
-    [Migration("20200421120843_InitialCreate")]
+    [Migration("20200421160033_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,9 +22,6 @@ namespace SFF.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsActive")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Location")

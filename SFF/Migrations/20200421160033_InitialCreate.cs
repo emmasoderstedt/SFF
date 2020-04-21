@@ -14,8 +14,7 @@ namespace SFF.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true),
-                    Location = table.Column<string>(nullable: true),
-                    IsActive = table.Column<bool>(nullable: false)
+                    Location = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
