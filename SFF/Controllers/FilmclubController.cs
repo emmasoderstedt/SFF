@@ -10,7 +10,7 @@ using SFF.Models;
 namespace SFF.Controllers
 {
     [ApiController]
-    [Route("api/filmclub")] //filmclubs!
+    [Route("api/filmclubs")]
 
     public class FilmclubController : ControllerBase
     {
@@ -77,7 +77,6 @@ namespace SFF.Controllers
         {
             var filmclub = await _context.Filmclubs.FindAsync(id);
 
-            //vilka rentals som är aktiva och tillhör filmklubbens
             var rentals =  _context.Rentals
                                         .Where(r => r.IsLent == true && r.FilmclubId == filmclub.Id);
 

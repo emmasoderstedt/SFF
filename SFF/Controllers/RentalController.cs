@@ -9,7 +9,7 @@ using SFF.Models;
 namespace SFF.Controllers
 {
     [ApiController]
-    [Route("api/rentals")] //skriv ut 
+    [Route("api/rentals")]
 
     public class RentalController : ControllerBase
     {
@@ -25,7 +25,9 @@ namespace SFF.Controllers
         public async Task<ActionResult<IEnumerable<Rental>>> GetRental()
         {
             
-            return await _context.Rentals.ToListAsync();
+            return await _context.Rentals
+                                        .Include(r => r.Review)
+                                        .ToListAsync();
         }
 
         
@@ -47,11 +49,8 @@ namespace SFF.Controllers
             }
             else
             {
-                return BadRequest();
+                return StatusCode(400, BadRequest());
             }
-
-
-
         }
 
 
@@ -66,42 +65,10 @@ namespace SFF.Controllers
             return rental;
         }
 
-        //Skapa ny trivia som håller text
-        [HttpPut("trivia/{id}")]
-        public async Task<ActionResult<Rental>> PutTrivia(long id , Rental rental)
-        {
-            var oldRental = _context.Rentals.Find(id);
-            oldRental.Trivia = rental.Trivia;
-            await _context.SaveChangesAsync();
-            return rental;
-        }
-
-        //Ta bort trivia
-        [HttpPut("removetrivia/{id}")]
-        public async Task<ActionResult<Rental>> DeleteTrivia(long id)
-        {
-            var rental = _context.Rentals.Find(id);
-            rental.Trivia = null;
-            await _context.SaveChangesAsync();
-            return rental;
-        }
-
-
-        //Lägg till ett betyg på filmen i denna rental
-        [HttpPut("rating/{id}")]
-        public async Task<ActionResult<Rental>> PutRating(long id ,Rental rental)
-        {
-            var oldRental = _context.Rentals.Find(id);
-            oldRental.Rating = rental.Rating;
-
-            await _context.SaveChangesAsync();
-            return rental;
-        }
-
         //GET XML-data om specifik film
-        [HttpGet("lable/{id}")]
+        [HttpGet("label/{id}")]
         [Produces("application/xml")]
-        public async Task<ActionResult<Lable>> GetLable(int id)
+        public async Task<ActionResult<Label>> GetLabel(int id)
         {
             var rental = await _context.Rentals.Where(r => r.Id == id).FirstOrDefaultAsync();
             if (rental == null)
@@ -114,7 +81,7 @@ namespace SFF.Controllers
 
 
 
-            return new Lable { Title = movie.Title, Location = filmclub.Location, Date = rental.Date };
+            return new Label { Title = movie.Title, Location = filmclub.Location, Date = rental.Date };
 
         }
 

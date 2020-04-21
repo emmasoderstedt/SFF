@@ -10,7 +10,7 @@ using SFF.Models;
 namespace SFF.Controllers
 {
     [ApiController]
-    [Route("api/movies")] //Kan också skriva såhär  [Route("api/[controller]")]
+    [Route("api/movies")] 
 
     public class MoviesController : ControllerBase
     {

@@ -74,12 +74,6 @@ namespace SFF.Migrations
                     b.Property<long>("MovieId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Trivia")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MovieId");
@@ -87,11 +81,43 @@ namespace SFF.Migrations
                     b.ToTable("Rentals");
                 });
 
+            modelBuilder.Entity("SFF.Models.Review", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("RentalId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Trivia")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RentalId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("SFF.Models.Rental", b =>
                 {
                     b.HasOne("SFF.Models.Movie", null)
                         .WithMany("Rentals")
                         .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("SFF.Models.Review", b =>
+                {
+                    b.HasOne("SFF.Models.Rental", null)
+                        .WithOne("Review")
+                        .HasForeignKey("SFF.Models.Review", "RentalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

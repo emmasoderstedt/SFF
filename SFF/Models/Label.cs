@@ -2,7 +2,7 @@
 
 namespace SFF.Models
 {
-    public class Lable
+    public class Label
     {
         public string Title { get; set; }
         public string Location { get; set; }

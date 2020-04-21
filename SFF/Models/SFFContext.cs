@@ -12,6 +12,7 @@ namespace SFF.Models
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Filmclub> Filmclubs { get; set; }
         public DbSet<Rental> Rentals { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -19,7 +20,6 @@ namespace SFF.Models
             optionsBuilder.UseSqlite("Data Source=minDatabas.db");
         }
 
-        //tvingar att vi man måste sätta ett grade för att lägga till en review
         protected override void OnModelCreating(ModelBuilder modelbuilder)
         {
            
