@@ -63,7 +63,7 @@ namespace SFF.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest());
             }
         }
 
@@ -101,7 +101,7 @@ namespace SFF.Controllers
 
         }
 
-        //GET XML-data om specifik film
+        //GET XML-data om specifik utlåning
         [HttpGet("label/{id}")]
         [Produces("application/xml")]
         public async Task<ActionResult<Label>> GetLabel(int id)
