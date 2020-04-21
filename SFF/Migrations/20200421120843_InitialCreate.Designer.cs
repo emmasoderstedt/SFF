@@ -9,7 +9,7 @@ using SFF.Models;
 namespace SFF.Migrations
 {
     [DbContext(typeof(SFFContext))]
-    [Migration("20200421100357_InitialCreate")]
+    [Migration("20200421120843_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

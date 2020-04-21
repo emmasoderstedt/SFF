@@ -25,11 +25,17 @@ namespace SFF.Controllers
         [HttpPost("{id}")]
         public async Task<ActionResult<Review>> PutTrivia(Review review, long id)
         {
-            var newreview = new Review { Trivia = review.Trivia, Rating = review.Rating, RentalId = id };
-            _context.Reviews.Add(newreview);
-            await _context.SaveChangesAsync();
+            var rental = await _context.Rentals.FindAsync(id);
+            if (rental.Review == null)
+            {
+                var newreview = new Review { Trivia = review.Trivia, Rating = review.Rating, RentalId = id };
+                _context.Reviews.Add(newreview);
+                await _context.SaveChangesAsync();
 
-            return newreview;
+                return newreview;
+
+            }
+            return BadRequest();
         }
 
         //Ta bort trivia
@@ -37,10 +43,33 @@ namespace SFF.Controllers
         public async Task<ActionResult<Review>> DeleteTrivia(long id)
         {
             var review = await _context.Reviews.Where(r => r.Id == id).FirstOrDefaultAsync();
-            review.Trivia = null;
-            await _context.SaveChangesAsync();
+            if (review != null)
+            {
+                review.Trivia = null;
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ReviewExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return review;
+            }
 
-            return review;
+            return NotFound();
+        }
+
+        private bool ReviewExists(long id)
+        {
+            return _context.Reviews.Any(e => e.Id == id);
         }
     }
 }

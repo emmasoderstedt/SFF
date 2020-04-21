@@ -10,7 +10,7 @@ using SFF.Models;
 namespace SFF.Controllers
 {
     [ApiController]
-    [Route("api/movies")] 
+    [Route("api/movies")]
 
     public class MoviesController : ControllerBase
     {
@@ -27,8 +27,21 @@ namespace SFF.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
-
             return await _context.Movies.Include(m => m.Rentals).ToListAsync();
+        }
+
+        //GET: Få en film med id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Movie>> GetMovies(long id)
+        {
+            var movie = await _context.Movies.FindAsync(id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            return movie;
         }
 
 
@@ -36,10 +49,6 @@ namespace SFF.Controllers
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
-            if (movie.Title == null)
-            {
-                return BadRequest();
-            }
             _context.Movies.Add(movie);
             await _context.SaveChangesAsync();
             return CreatedAtAction("PostMovie", new { id = movie.Id }, movie);
@@ -53,11 +62,38 @@ namespace SFF.Controllers
         public async Task<ActionResult<Movie>> PutMovieMaximalRentals(long id, int value)
         {
             var movie = _context.Movies.Find(id);
-            movie.MaximumRentals = value;
-            await _context.SaveChangesAsync();
-            return movie;
+
+            if (movie != null)
+            {
+                movie.MaximumRentals = value;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!MovieExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return movie;
+            }
+
+            return NotFound();
         }
 
+        private bool MovieExists(long id)
+        {
+            return _context.Movies.Any(e => e.Id == id);
+        }
 
     }
 }

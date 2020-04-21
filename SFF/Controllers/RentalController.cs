@@ -30,7 +30,21 @@ namespace SFF.Controllers
                                         .ToListAsync();
         }
 
-        
+        //GET: Få en rental med id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Rental>> GetRental(long id)
+        {
+            var rental = await _context.Rentals.FindAsync(id);
+
+            if (rental == null)
+            {
+                return NotFound();
+            }
+
+            return rental;
+        }
+
+
         //POST: Lägg till uthyrning
         [HttpPost]
         public async Task<ActionResult<Rental>> PostRental(Rental rental)
@@ -49,7 +63,7 @@ namespace SFF.Controllers
             }
             else
             {
-                return StatusCode(400, BadRequest());
+                return BadRequest();
             }
         }
 
@@ -59,10 +73,32 @@ namespace SFF.Controllers
         public async Task<ActionResult<Rental>> PutRental(long id)
         {
             var rental = _context.Rentals.Find(id);
-            rental.IsLent = false;
 
-            await _context.SaveChangesAsync();
-            return rental;
+            if (rental != null)
+            {
+                rental.IsLent = false;
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch(DbUpdateConcurrencyException)
+                {
+                    if (!RentalExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return rental;
+
+            }
+
+            return NotFound();
+
+
         }
 
         //GET XML-data om specifik film
@@ -76,13 +112,17 @@ namespace SFF.Controllers
                 return NotFound();
             }
 
+            
             var movie = await _context.Movies.Where(m => m.Id == rental.MovieId).FirstOrDefaultAsync();
             var filmclub = await _context.Filmclubs.Where(f => f.Id == rental.FilmclubId).FirstOrDefaultAsync();
 
-
-
             return new Label { Title = movie.Title, Location = filmclub.Location, Date = rental.Date };
 
+        }
+
+        private bool RentalExists(long id)
+        {
+            return _context.Rentals.Any(e => e.Id == id);
         }
 
     }

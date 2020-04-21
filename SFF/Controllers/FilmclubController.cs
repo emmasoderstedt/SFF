@@ -29,6 +29,22 @@ namespace SFF.Controllers
             return await _context.Filmclubs.ToListAsync();
         }
 
+        //GET: Få en filmklubb 
+        [HttpGet ("{id}")]
+        public async Task<ActionResult<Filmclub>> GetFilmclub(long id)
+        {
+           
+            var filmclub = await _context.Filmclubs.FindAsync(id);
+
+            if (filmclub == null)
+            {
+                return NotFound();
+            }
+
+            return filmclub;
+
+        }
+
         //POST: Lägg till filmclub
         [HttpPost]
         public async Task<ActionResult<Filmclub>> PostFilmClub(Filmclub filmclub)
@@ -43,9 +59,15 @@ namespace SFF.Controllers
         public async Task<ActionResult<Filmclub>> DeleteFilmclub(long id)
         {
             var filmclub = _context.Filmclubs.Find(id);
-            _context.Filmclubs.Remove(filmclub);
-            await _context.SaveChangesAsync();
-            return filmclub;
+
+            if (filmclub != null)
+            {
+                _context.Filmclubs.Remove(filmclub);
+                await _context.SaveChangesAsync();
+                return filmclub;
+
+            }
+            return NotFound();
         }
 
 
@@ -54,9 +76,32 @@ namespace SFF.Controllers
         public async Task<ActionResult<Filmclub>> PutFilmclubName(long id, Filmclub filmclub)
         {
             var oldFilmclub = _context.Filmclubs.Find(id);
-            oldFilmclub.Name = filmclub.Name;
-            await _context.SaveChangesAsync();
-            return oldFilmclub;
+
+            if (oldFilmclub != null)
+            {
+                oldFilmclub.Name = filmclub.Name;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FilmclubExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                
+                return oldFilmclub;
+
+            }
+            return NotFound();
 
         }
 
@@ -65,9 +110,32 @@ namespace SFF.Controllers
         public async Task<ActionResult<Filmclub>> PutFilmclubLocation(long id, Filmclub filmclub)
         {
             var oldFilmclub = _context.Filmclubs.Find(id);
-            oldFilmclub.Location = filmclub.Location;
-            await _context.SaveChangesAsync();
-            return oldFilmclub;
+
+            if (oldFilmclub != null)
+            {
+                oldFilmclub.Location = filmclub.Location;
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FilmclubExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return oldFilmclub;
+
+            }
+            return NotFound();
 
         }
 
@@ -76,6 +144,11 @@ namespace SFF.Controllers
         public async Task<ActionResult<IEnumerable<Movie>>> GetRentedMovies(long id)
         {
             var filmclub = await _context.Filmclubs.FindAsync(id);
+
+            if (filmclub == null)
+            {
+                return NotFound();
+            }
 
             var rentals =  _context.Rentals
                                         .Where(r => r.IsLent == true && r.FilmclubId == filmclub.Id);
@@ -89,6 +162,11 @@ namespace SFF.Controllers
             }
 
             return movies;
+        }
+
+        private bool FilmclubExists(long id)
+        {
+            return _context.Filmclubs.Any(e => e.Id == id);
         }
 
     }
